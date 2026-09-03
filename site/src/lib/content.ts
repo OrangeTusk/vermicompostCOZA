@@ -3,7 +3,7 @@ import { guides as fallbackGuides } from '../data/guides';
 import { products as fallbackProducts } from '../data/products';
 import type { Guide, Product, ProductCategory, SiteSettings } from './types';
 
-const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID;
+const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'w4y9k676';
 const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
 const configured = Boolean(projectId && projectId !== 'replace-me');
 const client = configured ? createClient({ projectId, dataset, apiVersion: '2026-09-01', useCdn: true }) : null;

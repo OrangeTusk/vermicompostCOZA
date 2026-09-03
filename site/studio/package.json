@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "sanity dev",
-    "build": "sanity build"
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "import-content": "sanity exec scripts/import-content.ts --with-user-token"
   },
   "dependencies": {
+    "@sanity/client": "^7.26.2",
     "@sanity/vision": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sanity": "^4.0.0",
-    "styled-components": "^6.1.0"
+    "styled-components": "^6.1.15"
   }
 }
