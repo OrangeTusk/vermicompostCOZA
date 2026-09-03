@@ -1,6 +1,6 @@
 <section class="hero" aria-labelledby="hero-title">
   <img class="hero-poster" src="/farm/worm-bins-open.jpg" alt="Rows of working worm bins at Vermicompost Farm" />
-  <div class="hero-video" id="hero-video" aria-hidden="true"></div><div class="hero-shade" aria-hidden="true"></div>
+  <div class="hero-video" aria-hidden="true"><div id="hero-player"></div></div><div class="hero-shade" aria-hidden="true"></div>
   <div class="hero-copy container">
     <p class="hero-kicker">Vermicompost Farm · Pretoria</p><h1 id="hero-title">Good things<br />grow from soil.</h1>
     <p>Earthworm-powered compost, living microbes and honest soil care—made slowly, naturally and right here on the farm.</p>
@@ -11,14 +11,14 @@
 </section>
 <script is:inline>
   (() => {
-    const mount = document.getElementById('hero-video'); const hero = mount?.closest('.hero');
+    const mount = document.getElementById('hero-player'); const hero = mount?.closest('.hero');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const narrow = window.matchMedia('(max-width: 700px)').matches;
     const saveData = Boolean(navigator.connection && navigator.connection.saveData);
     if (!mount || !hero || reduced || narrow || saveData) return;
     let player; let loopTimer; const startAt = 84; const endAt = 105;
     window.onYouTubeIframeAPIReady = () => {
-      player = new YT.Player('hero-video', { host: 'https://www.youtube-nocookie.com', videoId: 'mBTYp-bA-Ag', playerVars: { autoplay: 1, controls: 0, disablekb: 1, enablejsapi: 1, fs: 0, iv_load_policy: 3, playsinline: 1, rel: 0, start: startAt, end: endAt, origin: window.location.origin }, events: {
+      player = new YT.Player('hero-player', { host: 'https://www.youtube-nocookie.com', videoId: 'mBTYp-bA-Ag', playerVars: { autoplay: 1, controls: 0, disablekb: 1, enablejsapi: 1, fs: 0, iv_load_policy: 3, playsinline: 1, rel: 0, start: startAt, end: endAt, origin: window.location.origin }, events: {
         onReady(event) { const iframe = event.target.getIframe(); iframe.setAttribute('tabindex', '-1'); iframe.setAttribute('aria-hidden', 'true'); event.target.mute(); event.target.playVideo(); loopTimer = window.setInterval(() => { if (event.target.getCurrentTime() >= endAt - .35) event.target.seekTo(startAt, true); }, 250); },
         onStateChange(event) { if (event.data === 1) hero.classList.add('hero--playing'); if (event.data === 0) { event.target.seekTo(startAt, true); event.target.playVideo(); } },
         onError() { hero.classList.remove('hero--playing'); }
