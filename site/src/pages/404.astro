@@ -1,0 +1,5 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Page not found" description="The page could not be found."><section class="missing"><div class="container"><p class="eyebrow">404 · Lost in the bedding</p><h1>This path has been composted.</h1><p>The page you followed is no longer here, but the useful material is still nearby.</p><div><a class="button" href="/">Return home</a><a class="button button--ghost" href="/shop">Browse products</a></div></div></section></BaseLayout>
+<style>.missing { min-height: 75vh; display: grid; place-items: center; padding: 100px 0; text-align: center; }.missing h1 { max-width: 950px; margin: auto; font-size: clamp(4rem, 9vw, 9rem); }.missing p:not(.eyebrow) { max-width: 560px; margin: 28px auto; color: var(--muted); font-family: var(--serif); font-size: 1.3rem; }.missing div > div { display: flex; justify-content: center; gap: 12px; }</style>

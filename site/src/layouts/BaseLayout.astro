@@ -1,0 +1,22 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BasketDrawer from '../components/BasketDrawer.astro';
+import '../styles/global.css';
+interface Props { title: string; description: string; transparentHeader?: boolean; structuredData?: Record<string, unknown> | Array<Record<string, unknown>>; image?: string; }
+const { title, description, transparentHeader = false, structuredData, image = '/farm/worm-bins-open.jpg' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const socialImage = new URL(image, Astro.site);
+const fullTitle = title === 'Vermicompost Farm' ? title : `${title} · Vermicompost Farm`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" /><meta name="generator" content={Astro.generator} /><meta name="theme-color" content="#2f5233" />
+    <title>{fullTitle}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} /><link rel="icon" type="image/png" href="/farm/logo.png" />
+    <meta property="og:type" content="website" /><meta property="og:site_name" content="Vermicompost Farm" /><meta property="og:title" content={fullTitle} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={fullTitle} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={socialImage} />
+    {structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+  </head>
+  <body><a class="skip-link" href="#main-content">Skip to content</a><Header transparent={transparentHeader} /><main id="main-content"><slot /></main><Footer /><BasketDrawer /><script>import '../scripts/basket';</script></body>
+</html>

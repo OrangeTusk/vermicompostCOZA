@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { getGuides } from '../../lib/content';
+const guides = await getGuides();
+---
+<BaseLayout title="Learn" description="Practical guides to using vermicompost, starting a worm farm and brewing fresh vermicompost tea.">
+  <PageHero eyebrow="The field notes" title="Grow with what the soil already knows." intro="Clear, practical guidance from a working worm farm—written for real gardens, not laboratories." image="/farm/worm-bins-open.jpg" />
+  <section class="section"><div class="container guide-grid">{guides.map((guide, index) => <article class="guide-card paper-card"><a href={`/learn/${guide.slug}`}><div class="guide-image"><img src={guide.image} alt={guide.title} loading="lazy" /><span>Field note {String(index + 1).padStart(2, '0')}</span></div><div class="guide-copy"><h2>{guide.title}</h2><p>{guide.summary}</p><span class="read">Read the guide →</span></div></a></article>)}</div></section>
+  <section class="question"><div class="container"><p class="eyebrow">Still curious?</p><h2>Bring your questions<br />to the farm.</h2><p>Book a short information tour or ask Nico about your garden, worm bin or soil problem.</p><a class="button button--paper" href="/visit">Plan a visit <span>→</span></a></div></section>
+</BaseLayout>
+<style>
+  .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }.guide-card { transition: transform 180ms ease; }.guide-card:hover { transform: translateY(-5px) rotate(-.1deg); }.guide-card a { display: block; height: 100%; text-decoration: none; }.guide-image { position: relative; aspect-ratio: 4/3; overflow: hidden; }.guide-image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.78); }.guide-image span { position: absolute; left: 0; bottom: 0; padding: 9px 13px; background: var(--paper); color: var(--soil); font-size: .66rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }.guide-copy { padding: 26px; }.guide-copy h2 { font-size: 2rem; line-height: 1.05; }.guide-copy p { min-height: 92px; margin: 16px 0 26px; color: var(--muted); font-size: .9rem; }.read { color: var(--green); font-size: .78rem; font-weight: 600; text-decoration: underline; text-underline-offset: 5px; }.question { padding: clamp(80px, 12vw, 150px) 0; background: var(--green-dark); color: var(--white); }.question .eyebrow { color: #d8e2d3; }.question h2 { font-size: clamp(3.5rem, 7vw, 7.2rem); }.question p:not(.eyebrow) { max-width: 590px; margin: 28px 0; color: #d2d9cf; font-family: var(--serif); font-size: 1.3rem; }
+  @media (max-width: 840px) { .guide-grid { grid-template-columns: 1fr 1fr; }.guide-card:last-child { grid-column: 1 / -1; } } @media (max-width: 560px) { .guide-grid { grid-template-columns: 1fr; }.guide-card:last-child { grid-column: auto; } }
+</style>

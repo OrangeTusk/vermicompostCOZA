@@ -1,0 +1,32 @@
+---
+import type { Product } from '../lib/types';
+import { formatPrice } from '../data/products';
+interface Props { product: Product; index?: number; }
+const { product, index = 0 } = Astro.props;
+const firstVariant = product.variants[0];
+const priceLabel = firstVariant.price === null ? 'Enquire' : product.variants.length > 1 ? `From ${formatPrice(firstVariant.price)}` : formatPrice(firstVariant.price);
+---
+<article class="product-card paper-card" data-product-card data-category={product.category}>
+  <a class="product-image" href={`/shop/${product.slug}`}><img src={product.image} alt={product.name} loading="lazy" /><span>{String(index + 1).padStart(2, '0')}</span></a>
+  <div class="product-copy">
+    <p class="category">{product.categoryLabel}</p><h2><a href={`/shop/${product.slug}`}>{product.name}</a></h2><p>{product.summary}</p>
+    <div class="product-bottom"><strong>{priceLabel}</strong><button class="add-button" type="button" data-add-to-basket data-product-id={product.id} data-product-name={product.name} data-variant-id={firstVariant.id} data-variant-label={firstVariant.label} data-price={firstVariant.price ?? ''}>Add to enquiry <span aria-hidden="true">+</span></button></div>
+  </div>
+</article>
+<style>
+  .product-card { min-width: 0; overflow: hidden; }
+  .product-card[hidden] { display: none; }
+  .product-image { position: relative; display: block; aspect-ratio: 4/3; overflow: hidden; background: var(--sage); }
+  .product-image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.82); transition: transform 450ms ease; }
+  .product-card:hover .product-image img { transform: scale(1.04); }
+  .product-image span { position: absolute; left: 14px; top: 14px; width: 38px; height: 38px; display: grid; place-items: center; background: var(--paper); color: var(--soil); font-family: var(--serif); }
+  .product-copy { padding: 24px; }
+  .category { margin: 0 0 10px; color: var(--clay); font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+  h2 { font-size: 1.8rem; line-height: 1.05; }
+  h2 a { text-decoration: none; }
+  .product-copy > p:not(.category) { min-height: 68px; margin: 14px 0 24px; color: var(--muted); font-size: .9rem; }
+  .product-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .product-bottom strong { color: var(--green); font-size: .84rem; }
+  .add-button { border: 0; background: none; color: var(--green); cursor: pointer; font-size: .76rem; font-weight: 600; text-decoration: underline; text-underline-offset: 5px; }
+</style>
+

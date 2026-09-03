@@ -1,0 +1,4 @@
+.pnpm-store/
+.wrangler/
+*.log
+.DS_Store

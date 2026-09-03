@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { formatPrice } from '../../data/products';
+import { getProducts } from '../../lib/content';
+import type { Product } from '../../lib/types';
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product, related: products.filter((item) => item.category === product.category && item.id !== product.id).slice(0, 3) } }));
+}
+interface Props { product: Product; related: Product[]; }
+const { product, related } = Astro.props;
+const productSchema = {
+  '@context': 'https://schema.org', '@type': 'Product', name: product.name, description: product.summary,
+  image: product.gallery?.map((image) => new URL(image, Astro.site).href) || [new URL(product.image, Astro.site).href],
+  brand: { '@type': 'Brand', name: 'Vermicompost Farm' },
+  offers: product.variants.filter((variant) => variant.price !== null).map((variant) => ({ '@type': 'Offer', priceCurrency: 'ZAR', price: variant.price, name: variant.label, availability: 'https://schema.org/LimitedAvailability', url: new URL(Astro.url.pathname, Astro.site).href })),
+};
+const breadcrumbSchema = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site).href },
+  { '@type': 'ListItem', position: 2, name: 'Shop', item: new URL('/shop', Astro.site).href },
+  { '@type': 'ListItem', position: 3, name: product.name, item: new URL(Astro.url.pathname, Astro.site).href },
+] };
+---
+<BaseLayout title={product.name} description={product.summary} image={product.image} structuredData={[productSchema, breadcrumbSchema]}>
+  <div class="breadcrumbs container"><a href="/">Home</a><span>›</span><a href="/shop">Shop</a><span>›</span><span>{product.name}</span></div>
+  <section class="product-hero container">
+    <div class="gallery"><img class="primary-image" src={product.image} alt={product.name} />{product.gallery && <div class="thumbs">{product.gallery.slice(1).map((image) => <img src={image} alt={`${product.name} on the farm`} loading="lazy" />)}</div>}</div>
+    <div class="product-info"><p class="eyebrow">{product.categoryLabel}</p><h1>{product.name}</h1><p class="summary">{product.summary}</p>{product.description.map((paragraph) => <p>{paragraph}</p>)}
+      <form class="order-panel paper-card" onsubmit="return false"><label for="variant">Choose an option</label><select id="variant" data-variant-select>{product.variants.map((variant) => <option value={variant.id} data-label={variant.label} data-price={variant.price ?? ''}>{variant.label} · {formatPrice(variant.price)}</option>)}</select><p>{product.availability}</p><button class="button" type="button" data-add-to-basket data-product-id={product.id} data-product-name={product.name}>Add to enquiry <span>+</span></button></form>
+    </div>
+  </section>
+  <section class="section product-detail"><div class="container detail-grid"><div><p class="eyebrow">Why it works</p><h2>Built by biology,<br />not a factory.</h2><ul>{product.benefits.map((benefit) => <li>{benefit}</li>)}</ul></div><div class="usage paper-card"><p class="eyebrow">A good way to use it</p><ol>{product.usage.map((item, index) => <li><span>0{index + 1}</span>{item}</li>)}</ol><p class="note">Natural products vary from batch to batch. Ask the farm if you are unsure about a specific plant or application.</p></div></div></section>
+  {related.length > 0 && <section class="section related"><div class="container"><div class="section-heading"><div><p class="eyebrow">Keep exploring</p><h2>More from the farm.</h2></div><p class="lede">Products that work naturally alongside {product.name.toLowerCase()}.</p></div><div class="related-grid">{related.map((item, index) => <ProductCard product={item} index={index} />)}</div></div></section>}
+</BaseLayout>
+<style>
+  .breadcrumbs { display: flex; gap: 10px; padding-top: 26px; color: var(--muted); font-size: .75rem; }.breadcrumbs a { text-underline-offset: 4px; }.product-hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(46px, 8vw, 110px); padding-block: 54px 110px; }.gallery { min-width: 0; }.primary-image { width: 100%; aspect-ratio: 4/4.6; object-fit: cover; border: 1px solid var(--rule); filter: saturate(.84); box-shadow: var(--shadow); }.thumbs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }.thumbs img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }.product-info { align-self: center; }.product-info h1 { font-size: clamp(3.6rem, 7vw, 7rem); }.summary { margin: 28px 0 20px; color: var(--green); font-family: var(--serif); font-size: 1.45rem; line-height: 1.4; }.product-info > p:not(.eyebrow):not(.summary) { color: var(--muted); }.order-panel { margin-top: 34px; padding: 24px; }.order-panel label { display: block; margin-bottom: 8px; font-size: .73rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }.order-panel select { width: 100%; height: 50px; padding: 0 12px; border: 1px solid var(--rule); background: var(--white); }.order-panel p { margin: 9px 0 18px; color: var(--muted); font-size: .78rem; }.order-panel .button { width: 100%; }.product-detail { background: var(--white); }.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 8vw, 100px); }.detail-grid h2 { font-size: clamp(3rem, 5vw, 5rem); }.detail-grid ul { margin: 38px 0 0; padding: 0; list-style: none; }.detail-grid ul li { padding: 15px 0; border-top: 1px solid var(--rule); }.detail-grid ul li::before { content: '✓'; margin-right: 12px; color: var(--green); }.usage { padding: clamp(28px, 4vw, 48px); }.usage ol { margin: 6px 0 32px; padding: 0; list-style: none; }.usage li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--rule); }.usage li span { color: var(--clay); font-family: var(--serif); }.usage .note { margin: 0; color: var(--muted); font-size: .8rem; }.related { background: var(--paper); }.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  @media (max-width: 850px) { .product-hero, .detail-grid { grid-template-columns: 1fr; }.primary-image { aspect-ratio: 4/3; }.related-grid { grid-template-columns: 1fr 1fr; }.related-grid > :last-child { display: none; } } @media (max-width: 560px) { .related-grid { grid-template-columns: 1fr; }.related-grid > :last-child { display: block; } }
+</style>

@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+---
+<BaseLayout title="Privacy" description="How Vermicompost Farm handles information submitted through this website.">
+  <PageHero eyebrow="Privacy" title="Only what we need to reply." intro="This website is designed to collect the minimum information required to answer an order or product enquiry." />
+  <article class="section legal container"><section><h2>Information you provide</h2><p>When you send an email enquiry, the website may receive your name, telephone number, email address, suburb, fulfilment preference, enquiry basket and any note you add.</p></section><section><h2>How it is used</h2><p>This information is used to answer your enquiry, confirm products and arrange collection or delivery. It is not used to create advertising profiles or sold to third parties.</p></section><section><h2>WhatsApp and YouTube</h2><p>If you choose WhatsApp or play embedded YouTube content, those services process information under their own privacy terms. The hero video uses YouTube’s privacy-enhanced embed mode and remains muted.</p></section><section><h2>Questions or deletion</h2><p>Contact <a href="mailto:nico@vermicompostfarm.co.za">nico@vermicompostfarm.co.za</a> to ask about information submitted through the site or request its deletion.</p></section></article>
+</BaseLayout>
+<style>
+  .legal { max-width: 820px; }.legal section { padding: 32px 0; border-top: 1px solid var(--rule); }.legal h2 { margin-bottom: 18px; font-size: 2.3rem; }.legal p { color: var(--muted); font-size: 1rem; }.legal a { color: var(--green); text-underline-offset: 4px; }
+</style>
+

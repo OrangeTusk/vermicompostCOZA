@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Can I pay on the website?', acceptedAnswer: { '@type': 'Answer', text: 'No. The website sends an enquiry and payment is arranged directly after availability and fulfilment are confirmed.' } },
+  { '@type': 'Question', name: 'Can Vermicompost Farm deliver?', acceptedAnswer: { '@type': 'Answer', text: 'Local delivery may be available depending on the suburb and order size. The farm confirms delivery and its cost personally.' } },
+  { '@type': 'Question', name: 'Can I collect from the farm?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Collection is from Montana, Pretoria, by prior arrangement.' } },
+] };
+---
+<BaseLayout title="Ordering information" description="How product enquiries, collection, local delivery and bulk orders work at Vermicompost Farm." structuredData={faqSchema}>
+  <PageHero eyebrow="Ordering information" title="Simple orders. Personal confirmation." intro="The farm works with natural batches and bulky materials, so every enquiry is confirmed by a real person." />
+  <section class="section"><div class="container content-grid"><div class="content-intro"><p class="eyebrow">How it works</p><h2>No anonymous checkout. No surprises.</h2><p class="lede">Build an enquiry online, send it by WhatsApp or email, and Nico will confirm what is ready and the most sensible way to receive it.</p></div><div class="content-steps"><section><span>01</span><h3>Build your enquiry</h3><p>Choose products, bag sizes and quantities. The displayed total is an estimate based on the current website price list.</p></section><section><span>02</span><h3>Confirm availability</h3><p>The farm confirms stock, fresh-product timing and any bulk preparation required.</p></section><section><span>03</span><h3>Arrange collection or delivery</h3><p>Collection is from Montana, Pretoria by arrangement. Local delivery depends on area and order size.</p></section><section><span>04</span><h3>Payment is arranged directly</h3><p>No payment is taken on this website. Payment details are confirmed only after the order has been discussed.</p></section><a class="button" href="/shop">Browse products <span>→</span></a></div></div></section>
+</BaseLayout>
+<style>
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(50px, 9vw, 120px); }.content-intro { position: sticky; top: 30px; align-self: start; }.content-intro h2 { font-size: clamp(3rem, 5vw, 5.3rem); }.content-intro .lede { margin-top: 28px; }.content-steps section { display: grid; grid-template-columns: 48px 1fr; gap: 16px; padding: 30px 0; border-top: 1px solid var(--rule); }.content-steps span { color: var(--clay); font-family: var(--serif); }.content-steps h3 { font-size: 1.7rem; }.content-steps p { grid-column: 2; margin: 0; color: var(--muted); }.content-steps .button { margin-top: 26px; }
+  @media (max-width: 760px) { .content-grid { grid-template-columns: 1fr; }.content-intro { position: static; } }
+</style>
