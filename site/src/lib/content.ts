@@ -1,7 +1,7 @@
 import { createClient } from '@sanity/client';
 import { guides as fallbackGuides } from '../data/guides';
 import { products as fallbackProducts } from '../data/products';
-import type { Guide, Product, ProductCategory, SiteSettings } from './types';
+import type { Guide, HomeHero, Product, ProductCategory, SiteSettings } from './types';
 
 const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'w4y9k676';
 const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
@@ -54,6 +54,38 @@ export const getGuides = async (): Promise<Guide[]> => {
   } catch (error) {
     console.warn('Sanity guides unavailable; using local demo content.', error);
     return fallbackGuides;
+  }
+};
+
+const fallbackHomeHero: HomeHero = {
+  kicker: 'Vermicompost Farm · Pretoria',
+  heading: 'Good things\ngrow from soil.',
+  description: 'Earthworm-powered compost, living microbes and honest soil care—made slowly, naturally and right here on the farm.',
+  posterImage: '/farm/worm-bins-open.jpg',
+  posterAlt: 'Rows of working worm bins at Vermicompost Farm',
+  videoUrl: 'https://www.youtube.com/watch?v=mBTYp-bA-Ag',
+  videoStart: 84,
+  videoEnd: 105,
+  primaryLabel: 'Shop farm products',
+  primaryHref: '/shop',
+  secondaryLabel: 'Visit the farm',
+  secondaryHref: '/visit',
+  videoLinkLabel: 'Watch the full farm film',
+  scrollLabel: 'Scroll to dig deeper',
+};
+
+export const getHomeHero = async (): Promise<HomeHero> => {
+  if (!client) return fallbackHomeHero;
+  try {
+    const hero = await client.fetch<Partial<HomeHero> | null>(`*[_type == "homeHero"][0] {
+      kicker, heading, description, "posterImage": posterImage.asset->url, posterAlt,
+      videoUrl, videoStart, videoEnd, primaryLabel, primaryHref,
+      secondaryLabel, secondaryHref, videoLinkLabel, scrollLabel
+    }`);
+    return hero ? { ...fallbackHomeHero, ...hero, posterImage: hero.posterImage || fallbackHomeHero.posterImage } : fallbackHomeHero;
+  } catch (error) {
+    console.warn('Sanity homepage hero unavailable; using local demo content.', error);
+    return fallbackHomeHero;
   }
 };
 

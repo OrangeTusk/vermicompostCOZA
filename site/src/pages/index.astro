@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import VideoHero from '../components/VideoHero.astro';
-import { getProducts } from '../lib/content';
+import { getHomeHero, getProducts } from '../lib/content';
 import { formatPrice } from '../data/products';
 const featured = (await getProducts()).filter((product) => product.featured).slice(0, 3);
+const hero = await getHomeHero();
 ---
 <BaseLayout title="Vermicompost Farm" description="Organic vermicompost, red wigglers and living soil products made naturally in Pretoria." transparentHeader>
-  <VideoHero />
+  <VideoHero hero={hero} />
   <section class="proof" aria-label="Farm qualities"><div class="container proof-grid"><span><b>01</b> 100% organic</span><span><b>02</b> Farm produced</span><span><b>03</b> Living microbes</span><span><b>04</b> Pretoria grown</span></div></section>
   <section class="section"><div class="container">
     <div class="section-heading"><div><p class="eyebrow">From our farm</p><h2>Feed the soil.<br />The soil feeds everything.</h2></div><div><p class="lede">Naturally nutrient-rich products for gardeners who want healthier plants, more resilient soil and less waste.</p><a class="small-link" href="/shop">Browse the full farm shop <span>→</span></a></div></div>

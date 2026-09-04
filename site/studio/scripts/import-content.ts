@@ -17,8 +17,18 @@ async function uploadImage(publicPath: string, title: string) {
   if (existing) return { _type: 'image', asset: { _type: 'reference', _ref: existing } };
 
   const absolutePath = resolve(publicDirectory, publicPath.replace(/^\//, ''));
+  const filename = basename(absolutePath);
+  const existingAssetId = await client.fetch<string | null>(
+    '*[_type == "sanity.imageAsset" && originalFilename == $filename] | order(_createdAt asc)[0]._id',
+    { filename },
+  );
+  if (existingAssetId) {
+    uploadedAssets.set(publicPath, existingAssetId);
+    return { _type: 'image', asset: { _type: 'reference', _ref: existingAssetId } };
+  }
+
   const asset = await client.assets.upload('image', createReadStream(absolutePath), {
-    filename: basename(absolutePath),
+    filename,
     title,
   });
   uploadedAssets.set(publicPath, asset._id);
@@ -63,6 +73,27 @@ for (const guide of guides) {
   });
   console.log(`Imported guide: ${guide.title}`);
 }
+
+await client.createOrReplace({
+  _id: 'homeHero',
+  _type: 'homeHero',
+  kicker: 'Vermicompost Farm · Pretoria',
+  heading: 'Good things\ngrow from soil.',
+  description: 'Earthworm-powered compost, living microbes and honest soil care—made slowly, naturally and right here on the farm.',
+  posterImage: await uploadImage('/farm/worm-bins-open.jpg', 'Homepage hero fallback'),
+  posterAlt: 'Rows of working worm bins at Vermicompost Farm',
+  videoUrl: 'https://www.youtube.com/watch?v=mBTYp-bA-Ag',
+  videoStart: 84,
+  videoEnd: 105,
+  primaryLabel: 'Shop farm products',
+  primaryHref: '/shop',
+  secondaryLabel: 'Visit the farm',
+  secondaryHref: '/visit',
+  videoLinkLabel: 'Watch the full farm film',
+  scrollLabel: 'Scroll to dig deeper',
+});
+
+console.log('Imported homepage hero.');
 
 await client.createOrReplace({
   _id: 'siteSettings',

@@ -54,3 +54,20 @@ export interface SiteSettings {
   fulfilmentMessage: string;
   socialLinks: string[];
 }
+
+export interface HomeHero {
+  kicker: string;
+  heading: string;
+  description: string;
+  posterImage: string;
+  posterAlt: string;
+  videoUrl: string;
+  videoStart: number;
+  videoEnd: number;
+  primaryLabel: string;
+  primaryHref: string;
+  secondaryLabel: string;
+  secondaryHref: string;
+  videoLinkLabel: string;
+  scrollLabel: string;
+}
