@@ -5,12 +5,13 @@ import ResponsiveImage from './ResponsiveImage.astro';
 interface Props { product: Product; }
 const { product } = Astro.props;
 const firstVariant = product.variants[0];
-const priceLabel = !firstVariant || firstVariant.price === null ? 'Enquire' : product.variants.length > 1 ? `From ${formatPrice(firstVariant.price)}` : formatPrice(firstVariant.price);
+const priceLabel = !firstVariant || firstVariant.price === null ? 'Enquire' : formatPrice(firstVariant.price);
+const hasStartingPrice = Boolean(firstVariant && firstVariant.price !== null && product.variants.length > 1);
 ---
 <article class="product-card" data-product-card data-category={product.category}>
   <a class="product-image" href={`/shop/${product.slug}`}><ResponsiveImage src={product.image} alt={product.name} sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 34vw" /></a>
   <div class="product-copy"><p class="category">{product.categoryLabel}</p><h3><a href={`/shop/${product.slug}`}>{product.name}</a></h3><p>{product.summary}</p>
-    <div class="product-bottom"><strong>{priceLabel}</strong>{firstVariant && <button type="button" data-add-to-basket data-product-id={product.id} data-product-name={product.name} data-variant-id={firstVariant.id} data-variant-label={firstVariant.label} data-price={firstVariant.price ?? ''}>Add <span aria-hidden="true">+</span></button>}</div>
+    <div class="product-bottom"><strong>{hasStartingPrice && <span>From </span>}{priceLabel}</strong>{firstVariant && <button type="button" data-add-to-basket data-product-id={product.id} data-product-name={product.name} data-variant-id={firstVariant.id} data-variant-label={firstVariant.label} data-price={firstVariant.price ?? ''}>Add <span aria-hidden="true">+</span></button>}</div>
   </div>
 </article>
 <style>

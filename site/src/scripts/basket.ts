@@ -20,28 +20,68 @@ const saveBasket = () => {
 const money = (value: number) => `R${value.toLocaleString('en-ZA')}`;
 const total = () => basket.reduce((sum, item) => sum + (item.displayedPrice || 0) * item.quantity, 0);
 const count = () => basket.reduce((sum, item) => sum + item.quantity, 0);
+const isAfrikaans = () => document.documentElement.lang === 'af';
+
+const productNamesAf: Record<string, string> = {
+  'Sifted vermicompost': 'Gesifte vermikompos',
+  'Unsifted vermicompost': 'Ongesifte vermikompos',
+  'Potting soil': 'Potgrond',
+  'Organic mulch': 'Organiese deklaag',
+  'Aged horse manure': 'Verouderde perdemis',
+  'Red wiggler worms': 'Rooi komposwurms',
+  'Worm bedding & food': 'Wurmbeddegoed & kos',
+  'Vermicompost tea': 'Vermikompostee',
+  'Worm farm information tour': 'Wurmplaas-inligtingstoer',
+};
+
+const variantLabelsAf: Record<string, string> = {
+  '25 dm³ bag': '25 dm³-sak',
+  '60 dm³ bag': '60 dm³-sak',
+  '1 m³ bulk': '1 m³-grootmaat',
+  'Populated starter tray': 'Bevolkte beginbak',
+  'Standard bag': 'Standaardsak',
+  'Per litre': 'Per liter',
+  '5 litre container': '5-liter-houer',
+  '30-minute tour · per person': '30-minute-toer · per persoon',
+};
+
+const basketCopy = () => isAfrikaans() ? {
+  decrease: 'Verminder', increase: 'Vermeerder', quantity: 'hoeveelheid', remove: 'Verwyder', enquire: 'Doen navraag',
+  empty: 'Jou navraagmandjie is leeg.', browse: 'Blaai deur plaasprodukte',
+} : {
+  decrease: 'Decrease', increase: 'Increase', quantity: 'quantity', remove: 'Remove', enquire: 'Enquire',
+  empty: 'Your enquiry basket is empty.', browse: 'Browse farm products',
+};
 
 const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
 
-const basketMarkup = (item: BasketItem, index: number) => `
+const basketMarkup = (item: BasketItem, index: number) => {
+  const copy = basketCopy();
+  const productName = isAfrikaans() ? productNamesAf[item.productName] || item.productName : item.productName;
+  const variantLabel = isAfrikaans() ? variantLabelsAf[item.variantLabel] || item.variantLabel : item.variantLabel;
+  return `
   <article class="basket-line">
-    <div><h3>${escapeHtml(item.productName)}</h3><p>${escapeHtml(item.variantLabel)}</p>
-      <div class="basket-line-controls"><button type="button" data-basket-decrease="${index}" aria-label="Decrease ${escapeHtml(item.productName)} quantity">−</button><span>${item.quantity}</span><button type="button" data-basket-increase="${index}" aria-label="Increase ${escapeHtml(item.productName)} quantity">+</button><button type="button" class="basket-remove" data-basket-remove="${index}">Remove</button></div>
+    <div><h3>${escapeHtml(productName)}</h3><p>${escapeHtml(variantLabel)}</p>
+      <div class="basket-line-controls"><button type="button" data-basket-decrease="${index}" aria-label="${copy.decrease} ${escapeHtml(productName)} ${copy.quantity}">−</button><span>${item.quantity}</span><button type="button" data-basket-increase="${index}" aria-label="${copy.increase} ${escapeHtml(productName)} ${copy.quantity}">+</button><button type="button" class="basket-remove" data-basket-remove="${index}">${copy.remove}</button></div>
     </div>
-    <span class="basket-line-price">${item.displayedPrice === null ? 'Enquire' : money(item.displayedPrice * item.quantity)}</span>
+    <span class="basket-line-price">${item.displayedPrice === null ? copy.enquire : money(item.displayedPrice * item.quantity)}</span>
   </article>`;
+};
 
 const render = () => {
   document.querySelectorAll<HTMLElement>('[data-basket-count]').forEach((element) => { element.textContent = String(count()); });
   document.querySelectorAll<HTMLElement>('[data-basket-total]').forEach((element) => { element.textContent = money(total()); });
   document.querySelectorAll<HTMLElement>('[data-basket-items], [data-enquiry-items]').forEach((element) => {
-    element.innerHTML = basket.length ? basket.map(basketMarkup).join('') : '<p class="basket-empty">Your enquiry basket is empty. <a href="/shop">Browse farm products</a>.</p>';
+    const copy = basketCopy();
+    element.innerHTML = basket.length ? basket.map(basketMarkup).join('') : `<p class="basket-empty">${copy.empty} <a href="/shop">${copy.browse}</a>.</p>`;
   });
   document.querySelectorAll<HTMLElement>('[data-basket-json]').forEach((element) => { element.dataset.basketJson = JSON.stringify(basket); });
   const wa = document.querySelector<HTMLAnchorElement>('[data-whatsapp-enquiry]');
   if (wa) {
-    const lines = basket.map((item) => `• ${item.quantity} × ${item.productName} — ${item.variantLabel}`);
-    const message = ['Hello Nico, I would like to enquire about:', '', ...lines, '', `Estimated product total: ${money(total())}`, '', 'Please confirm availability, collection or delivery.'].join('\n');
+    const lines = basket.map((item) => `• ${item.quantity} × ${isAfrikaans() ? productNamesAf[item.productName] || item.productName : item.productName} — ${isAfrikaans() ? variantLabelsAf[item.variantLabel] || item.variantLabel : item.variantLabel}`);
+    const message = isAfrikaans()
+      ? ['Hallo Nico, ek wil graag navraag doen oor:', '', ...lines, '', `Beraamde produktotaal: ${money(total())}`, '', 'Bevestig asseblief beskikbaarheid, afhaal of aflewering.'].join('\n')
+      : ['Hello Nico, I would like to enquire about:', '', ...lines, '', `Estimated product total: ${money(total())}`, '', 'Please confirm availability, collection or delivery.'].join('\n');
     wa.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     wa.toggleAttribute('aria-disabled', basket.length === 0);
   }
@@ -73,6 +113,7 @@ document.addEventListener('click', (event) => {
   if (increase || decrease || remove) { saveBasket(); render(); }
 });
 document.addEventListener('basket:updated', render);
+document.addEventListener('language:changed', render);
 render();
 
 const enquiryForm = document.querySelector<HTMLFormElement>('[data-enquiry-form]');
@@ -80,14 +121,16 @@ enquiryForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
   const status = enquiryForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = enquiryForm.querySelector<HTMLButtonElement>('button[type="submit"]');
-  submit?.setAttribute('disabled', 'true'); if (status) status.textContent = 'Sending your enquiry…';
+  submit?.setAttribute('disabled', 'true'); if (status) status.textContent = isAfrikaans() ? 'Jou navraag word gestuur…' : 'Sending your enquiry…';
   const data = Object.fromEntries(new FormData(enquiryForm).entries());
   try {
     const response = await fetch('/api/enquiry', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...data, items: basket }) });
     if (!response.ok) throw new Error('Delivery unavailable');
-    if (status) status.textContent = 'Thank you. Your enquiry has been sent to the farm.';
+    if (status) status.textContent = isAfrikaans() ? 'Dankie. Jou navraag is aan die plaas gestuur.' : 'Thank you. Your enquiry has been sent to the farm.';
     basket = []; saveBasket(); render(); enquiryForm.reset();
   } catch {
-    if (status) status.innerHTML = 'Email delivery is not connected in this preview. Please use WhatsApp or <a href="mailto:nico@vermicompostfarm.co.za">email Nico directly</a>.';
+    if (status) status.innerHTML = isAfrikaans()
+      ? 'E-posaflewering is nie in hierdie voorskou gekoppel nie. Gebruik asseblief WhatsApp of <a href="mailto:nico@vermicompostfarm.co.za">stuur direk vir Nico ’n e-pos</a>.'
+      : 'Email delivery is not connected in this preview. Please use WhatsApp or <a href="mailto:nico@vermicompostfarm.co.za">email Nico directly</a>.';
   } finally { submit?.removeAttribute('disabled'); }
 });

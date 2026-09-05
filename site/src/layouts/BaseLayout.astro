@@ -18,5 +18,5 @@ const fullTitle = title === 'Vermicompost Farm' ? title : `${title} · Vermicomp
     <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={fullTitle} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={socialImage} />
     {structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
   </head>
-  <body><a class="skip-link" href="#main-content">Skip to content</a><Header transparent={transparentHeader} /><main id="main-content"><slot /></main><Footer /><BasketDrawer /><script>import '../scripts/basket';</script></body>
+  <body><a class="skip-link" href="#main-content">Skip to content</a><Header transparent={transparentHeader} /><main id="main-content"><slot /></main><Footer /><BasketDrawer /><script>import '../scripts/language'; import '../scripts/basket';</script></body>
 </html>

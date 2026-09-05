@@ -3,8 +3,9 @@ const { transparent = false } = Astro.props;
 ---
 <header class:list={['site-header', { 'site-header--transparent': transparent }]}>
   <div class="header-inner">
-    <a class="brand" href="/" aria-label="Vermicompost Farm home"><img src="/farm/logo.png" alt="Vermicompost Farm" width="150" height="67" /></a>
+    <a class="brand" href="/" aria-label="Vermicompost Farm home"><img src="/farm/logo.png" alt="Vermicompost Farm" width="1920" height="1082" /></a>
     <nav class="desktop-nav" aria-label="Primary navigation"><a href="/shop">Shop</a><a href="/learn">Learn</a><a href="/our-farm">Our Farm</a><a href="/visit">Contact</a></nav>
+    <div class="language-switch" role="group" aria-label="Language"><button type="button" data-language="en" aria-pressed="true">EN</button><span aria-hidden="true">/</span><button type="button" data-language="af" aria-pressed="false">AF</button></div>
     <a class="basket-link" href="/enquiry">Enquiry <span data-basket-count>0</span></a>
     <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-nav">Menu</button>
   </div>
@@ -21,15 +22,17 @@ const { transparent = false } = Astro.props;
 <style>
   .site-header { position: relative; z-index: 50; border-bottom: 1px solid var(--rule); background: rgb(247 242 232 / 96%); }
   .site-header--transparent { position: absolute; inset: 0 0 auto; border-color: rgb(255 253 248 / 25%); background: linear-gradient(rgb(16 21 15 / 64%), transparent); color: var(--white); }
-  .header-inner { width: var(--page); min-height: 74px; margin: auto; display: grid; grid-template-columns: 180px 1fr auto; align-items: center; gap: 24px; }
-  .brand { display: block; width: 145px; }.brand img { width: 100%; height: auto; }.site-header--transparent .brand img { filter: brightness(0) invert(1); }
+  .header-inner { width: var(--page); min-height: 112px; margin: auto; display: grid; grid-template-columns: 170px 1fr auto auto; align-items: center; gap: 20px; }
+  .brand { position: relative; width: 150px; height: 106px; display: block; overflow: hidden; }.brand img { position: absolute; left: 50%; top: 50%; width: 360px; max-width: none; height: auto; transform: translate(-50%, -50%); }.site-header--transparent .brand { border: 1px solid rgb(255 253 248 / 38%); border-radius: 2px; background: rgb(255 253 248 / 62%); backdrop-filter: blur(5px) saturate(.8); }.site-header--transparent .brand img { filter: drop-shadow(0 1px 1px rgb(255 253 248 / 45%)); }
   .desktop-nav { display: flex; justify-content: center; gap: clamp(22px, 3vw, 40px); }
   nav a, .basket-link { font-size: .77rem; font-weight: 600; letter-spacing: .06em; text-decoration: none; text-transform: uppercase; }
   nav a:hover, .basket-link:hover { text-decoration: underline; text-underline-offset: 6px; }
   .basket-link { display: flex; align-items: center; gap: 8px; }
   .basket-link span, .mobile-nav span { min-width: 22px; height: 22px; display: inline-grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: .68rem; }
+  .language-switch { display: flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid currentColor; border-radius: 2px; font-size: .68rem; line-height: 1; }.language-switch button { padding: 2px; border: 0; background: transparent; color: inherit; cursor: pointer; font-size: inherit; font-weight: 600; opacity: .55; }.language-switch button[aria-pressed='true'] { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
   .menu-button { display: none; border: 0; background: transparent; color: inherit; cursor: pointer; font-size: .77rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
   .mobile-nav { width: var(--page); margin: auto; padding: 8px 0 24px; flex-direction: column; align-items: flex-start; gap: 15px; }
   .mobile-nav:not([hidden]) { display: none; }
-  @media (max-width: 900px) { .header-inner { grid-template-columns: 1fr auto; min-height: 68px; } .desktop-nav, .basket-link { display: none; } .menu-button { display: block; } .brand { width: 130px; } .mobile-nav:not([hidden]) { display: flex; } }
+  @media (max-width: 900px) { .header-inner { grid-template-columns: 1fr auto auto; min-height: 98px; gap: 12px; } .desktop-nav, .basket-link { display: none; } .menu-button { display: block; } .brand { width: 126px; height: 94px; }.brand img { width: 300px; }.mobile-nav:not([hidden]) { display: flex; } }
+  @media (max-width: 390px) { .header-inner { gap: 8px; }.brand { width: 112px; }.brand img { width: 276px; }.language-switch { padding-inline: 5px; } }
 </style>
