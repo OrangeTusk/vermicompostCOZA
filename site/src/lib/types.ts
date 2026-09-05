@@ -55,7 +55,7 @@ export interface SiteSettings {
   socialLinks: string[];
 }
 
-export interface HomeHero {
+export interface HomePageContent {
   kicker: string;
   heading: string;
   description: string;
@@ -70,4 +70,18 @@ export interface HomeHero {
   secondaryHref: string;
   videoLinkLabel: string;
   scrollLabel: string;
+  featuredEyebrow: string;
+  featuredTitle: string;
+  featuredIntro: string;
+  featuredProductIds: string[];
+  valueEyebrow: string;
+  valueTitle: string;
+  valueBody: string;
+  valueImage: string;
+  valueImageAlt: string;
+  benefits: Array<{ title: string; text: string }>;
+  contactTitle: string;
+  contactBody: string;
 }
+
+export type HomeHero = HomePageContent;

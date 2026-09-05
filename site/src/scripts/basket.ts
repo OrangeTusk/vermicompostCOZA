@@ -47,20 +47,6 @@ const render = () => {
   }
 };
 
-const openDrawer = () => {
-  const drawer = document.querySelector<HTMLElement>('[data-basket-drawer]');
-  const backdrop = document.querySelector<HTMLElement>('[data-basket-backdrop]');
-  drawer?.setAttribute('data-open', 'true'); drawer?.setAttribute('aria-hidden', 'false');
-  if (backdrop) backdrop.hidden = false;
-};
-
-const closeDrawer = () => {
-  const drawer = document.querySelector<HTMLElement>('[data-basket-drawer]');
-  const backdrop = document.querySelector<HTMLElement>('[data-basket-backdrop]');
-  drawer?.removeAttribute('data-open'); drawer?.setAttribute('aria-hidden', 'true');
-  if (backdrop) backdrop.hidden = true;
-};
-
 document.addEventListener('click', (event) => {
   const target = event.target as HTMLElement;
   const add = target.closest<HTMLElement>('[data-add-to-basket]');
@@ -74,7 +60,7 @@ document.addEventListener('click', (event) => {
     };
     const existing = basket.find((entry) => entry.productId === item.productId && entry.variantId === item.variantId);
     if (existing) existing.quantity += 1; else basket.push(item);
-    saveBasket(); render(); openDrawer();
+    saveBasket(); render();
     const toast = document.querySelector<HTMLElement>('[data-basket-toast]');
     if (toast) { toast.hidden = false; window.setTimeout(() => { toast.hidden = true; }, 2200); }
   }
@@ -85,11 +71,7 @@ document.addEventListener('click', (event) => {
   if (decrease) { const i = Number(decrease.dataset.basketDecrease); basket[i].quantity -= 1; if (basket[i].quantity <= 0) basket.splice(i, 1); }
   if (remove) basket.splice(Number(remove.dataset.basketRemove), 1);
   if (increase || decrease || remove) { saveBasket(); render(); }
-  if (target.closest('[data-basket-close]') || target.closest('[data-basket-backdrop]')) closeDrawer();
-  if (target.closest('.basket-link') && window.innerWidth > 700) { event.preventDefault(); openDrawer(); }
 });
-
-document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeDrawer(); });
 document.addEventListener('basket:updated', render);
 render();
 
@@ -109,4 +91,3 @@ enquiryForm?.addEventListener('submit', async (event) => {
     if (status) status.innerHTML = 'Email delivery is not connected in this preview. Please use WhatsApp or <a href="mailto:nico@vermicompostfarm.co.za">email Nico directly</a>.';
   } finally { submit?.removeAttribute('disabled'); }
 });
-

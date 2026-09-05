@@ -1,0 +1,9 @@
+---
+interface Props { src: string; alt: string; class?: string; loading?: 'lazy' | 'eager'; sizes?: string; width?: number; height?: number; }
+const { src, alt, class: className, loading = 'lazy', sizes = '100vw', width = 1200, height = 900 } = Astro.props;
+const isSanity = src.includes('cdn.sanity.io/images/');
+const buildUrl = (targetWidth: number) => { const url = new URL(src); url.searchParams.set('w', String(targetWidth)); url.searchParams.set('fit', 'max'); url.searchParams.set('auto', 'format'); return url.href; };
+const srcset = isSanity ? [420, 720, 1080, 1440].map((size) => `${buildUrl(size)} ${size}w`).join(', ') : undefined;
+const displaySrc = isSanity ? buildUrl(width) : src;
+---
+<img src={displaySrc} srcset={srcset} sizes={srcset ? sizes : undefined} alt={alt} class={className} loading={loading} decoding="async" width={width} height={height} />

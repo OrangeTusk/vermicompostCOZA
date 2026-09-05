@@ -1,75 +1,35 @@
 ---
-import type { HomeHero } from '../lib/types';
-
-interface Props { hero: HomeHero }
-
+import type { HomePageContent } from '../lib/types';
+import ResponsiveImage from './ResponsiveImage.astro';
+interface Props { hero: HomePageContent }
 const { hero } = Astro.props;
-const headingLines = hero.heading.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-
-const getYouTubeId = (value: string) => {
-  try {
-    const url = new URL(value);
-    if (url.hostname === 'youtu.be') return url.pathname.split('/').filter(Boolean)[0];
-    const pathMatch = url.pathname.match(/\/(?:embed|shorts)\/([^/?]+)/);
-    return url.searchParams.get('v') || pathMatch?.[1];
-  } catch {
-    return undefined;
-  }
-};
-
+const getYouTubeId = (value: string) => { try { const url = new URL(value); if (url.hostname === 'youtu.be') return url.pathname.split('/').filter(Boolean)[0]; return url.searchParams.get('v') || url.pathname.match(/\/(?:embed|shorts)\/([^/?]+)/)?.[1]; } catch { return undefined; } };
 const videoId = getYouTubeId(hero.videoUrl) || 'mBTYp-bA-Ag';
-const watchUrl = `https://www.youtube.com/watch?v=${videoId}&t=${hero.videoStart}s`;
 ---
 <section class="hero" aria-labelledby="hero-title" data-video-hero data-video-id={videoId} data-video-start={hero.videoStart} data-video-end={hero.videoEnd}>
-  <img class="hero-poster" src={hero.posterImage} alt={hero.posterAlt} />
+  <ResponsiveImage class="hero-poster" src={hero.posterImage} alt={hero.posterAlt} loading="eager" sizes="100vw" width={1600} height={900} />
   <div class="hero-video" aria-hidden="true"><div id="hero-player"></div></div><div class="hero-shade" aria-hidden="true"></div>
-  <div class="hero-copy container">
-    <p class="hero-kicker">{hero.kicker}</p><h1 id="hero-title">{headingLines.map((line, index) => <span>{line}{index < headingLines.length - 1 ? ' ' : ''}</span>)}</h1>
-    <p>{hero.description}</p>
-    <div class="hero-actions"><a class="button button--paper" href={hero.primaryHref}>{hero.primaryLabel} <span aria-hidden="true">→</span></a><a class="text-link" href={hero.secondaryHref}>{hero.secondaryLabel} <span aria-hidden="true">↗</span></a></div>
-  </div>
-  <a class="watch-link" href={watchUrl} target="_blank" rel="noreferrer"><span class="play" aria-hidden="true">▶</span> {hero.videoLinkLabel}</a>
-  <div class="scroll-note" aria-hidden="true"><span></span> {hero.scrollLabel}</div>
+  <div class="hero-copy container"><p class="hero-kicker">{hero.kicker}</p><h1 id="hero-title">{hero.heading}</h1><p>{hero.description}</p><div class="hero-actions"><a class="button button--paper" href={hero.primaryHref}>{hero.primaryLabel}</a><a class="secondary" href={hero.secondaryHref}>{hero.secondaryLabel}</a></div></div>
 </section>
 <script is:inline>
   (() => {
     const hero = document.querySelector('[data-video-hero]'); const mount = hero?.querySelector('#hero-player');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const narrow = window.matchMedia('(max-width: 700px)').matches;
-    const saveData = Boolean(navigator.connection && navigator.connection.saveData);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; const narrow = window.matchMedia('(max-width: 700px)').matches; const saveData = Boolean(navigator.connection && navigator.connection.saveData);
     if (!mount || !hero || reduced || narrow || saveData) return;
     let player; let loopTimer; const videoId = hero.dataset.videoId; const startAt = Number(hero.dataset.videoStart) || 0; const endAt = Math.max(Number(hero.dataset.videoEnd) || startAt + 20, startAt + 1);
-    window.onYouTubeIframeAPIReady = () => {
-      player = new YT.Player(mount, { host: 'https://www.youtube-nocookie.com', videoId, playerVars: { autoplay: 1, controls: 0, disablekb: 1, enablejsapi: 1, fs: 0, iv_load_policy: 3, playsinline: 1, rel: 0, start: startAt, end: endAt, origin: window.location.origin }, events: {
-        onReady(event) { const iframe = event.target.getIframe(); iframe.setAttribute('tabindex', '-1'); iframe.setAttribute('aria-hidden', 'true'); event.target.mute(); event.target.playVideo(); loopTimer = window.setInterval(() => { if (event.target.getCurrentTime() >= endAt - .35) event.target.seekTo(startAt, true); }, 250); },
-        onStateChange(event) { if (event.data === 1) hero.classList.add('hero--playing'); if (event.data === 0) { event.target.seekTo(startAt, true); event.target.playVideo(); } },
-        onError() { hero.classList.remove('hero--playing'); }
-      }});
-    };
+    window.onYouTubeIframeAPIReady = () => { player = new YT.Player(mount, { host: 'https://www.youtube-nocookie.com', videoId, playerVars: { autoplay: 1, controls: 0, disablekb: 1, enablejsapi: 1, fs: 0, iv_load_policy: 3, playsinline: 1, rel: 0, start: startAt, end: endAt, origin: window.location.origin }, events: {
+      onReady(event) { const iframe = event.target.getIframe(); iframe.setAttribute('tabindex', '-1'); iframe.setAttribute('aria-hidden', 'true'); event.target.mute(); event.target.playVideo(); loopTimer = window.setInterval(() => { if (event.target.getCurrentTime() >= endAt - .35) event.target.seekTo(startAt, true); }, 250); },
+      onStateChange(event) { if (event.data === 1) hero.classList.add('hero--playing'); if (event.data === 0) { event.target.seekTo(startAt, true); event.target.playVideo(); } }, onError() { hero.classList.remove('hero--playing'); }
+    }}); };
     const api = document.createElement('script'); api.src = 'https://www.youtube.com/iframe_api'; api.async = true; document.head.appendChild(api);
-    document.addEventListener('visibilitychange', () => { if (!player) return; if (document.hidden) player.pauseVideo(); else { player.seekTo(Math.max(startAt, player.getCurrentTime()), true); player.playVideo(); } });
-    window.addEventListener('pagehide', () => window.clearInterval(loopTimer), { once: true });
+    document.addEventListener('visibilitychange', () => { if (!player) return; if (document.hidden) player.pauseVideo(); else player.playVideo(); }); window.addEventListener('pagehide', () => window.clearInterval(loopTimer), { once: true });
   })();
 </script>
 <style>
-  .hero { position: relative; min-height: max(700px, 100svh); display: flex; align-items: flex-end; overflow: hidden; background: var(--ink); color: var(--white); isolation: isolate; }
-  .hero-poster, .hero-video, .hero-shade { position: absolute; inset: 0; }
-  .hero-poster { width: 100%; height: 100%; object-fit: cover; filter: saturate(.76) sepia(.08); }
-  .hero-video { z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1s ease; }
-  .hero--playing .hero-video { opacity: 1; }
-  .hero-video :global(iframe) { position: absolute; left: 50%; top: 50%; width: max(100vw, 177.78vh); height: max(100vh, 56.25vw); transform: translate(-50%, -50%) scale(1.05); border: 0; filter: saturate(.72) contrast(1.03); pointer-events: none; }
-  .hero-shade { z-index: 2; background: linear-gradient(90deg, rgb(19 24 18 / 79%) 0%, rgb(36 27 20 / 52%) 54%, rgb(17 23 17 / 38%) 100%), linear-gradient(0deg, rgb(15 19 14 / 58%) 0%, transparent 46%); }
-  .hero-copy { position: relative; z-index: 3; padding-bottom: clamp(90px, 12vh, 140px); }
-  .hero-kicker { margin-bottom: 22px; font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
-  .hero h1 { max-width: 950px; text-wrap: balance; }
-  .hero h1 span { display: block; }
-  .hero-copy > p:not(.hero-kicker) { max-width: 630px; margin: 30px 0 34px; color: #f4f0e7; font-family: var(--serif); font-size: clamp(1.25rem, 2.1vw, 1.7rem); line-height: 1.45; }
-  .hero-actions { display: flex; align-items: center; gap: 28px; }
-  .text-link { font-size: .86rem; font-weight: 600; text-underline-offset: 7px; }
-  .watch-link { position: absolute; z-index: 3; right: max(24px, calc((100vw - var(--page)) / 2)); bottom: 104px; display: flex; align-items: center; gap: 12px; color: var(--white); font-size: .76rem; font-weight: 600; letter-spacing: .06em; text-decoration: none; text-transform: uppercase; }
-  .play { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 70%); border-radius: 50%; font-size: .68rem; }
-  .scroll-note { position: absolute; z-index: 3; left: max(24px, calc((100vw - var(--page)) / 2)); bottom: 26px; display: flex; align-items: center; gap: 12px; color: rgb(255 255 255 / 70%); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; }
-  .scroll-note span { width: 38px; height: 1px; background: currentColor; }
-  @media (max-width: 900px) { .watch-link { right: 20px; bottom: 26px; } .scroll-note { display: none; } }
-  @media (max-width: 700px) { .hero { min-height: 780px; } .hero-copy { padding-bottom: 150px; } .hero-actions { align-items: flex-start; flex-direction: column; gap: 20px; } .watch-link { left: 14px; right: auto; } }
+  .hero { position: relative; min-height: clamp(610px, 78svh, 760px); display: flex; align-items: center; overflow: hidden; background: var(--ink); color: var(--white); isolation: isolate; }
+  :global(.hero-poster), .hero-video, .hero-shade { position: absolute; inset: 0; }:global(.hero-poster) { width: 100%; height: 100%; object-fit: cover; filter: saturate(.72); }.hero-video { z-index: 1; opacity: 0; pointer-events: none; transition: opacity .8s ease; }.hero--playing .hero-video { opacity: 1; }
+  .hero-video :global(iframe) { position: absolute; left: 50%; top: 50%; width: max(100vw, 177.78vh); height: max(100vh, 56.25vw); transform: translate(-50%, -50%) scale(1.04); border: 0; filter: saturate(.68) contrast(1.03); pointer-events: none; }
+  .hero-shade { z-index: 2; background: linear-gradient(90deg, rgb(17 23 16 / 82%) 0%, rgb(38 28 20 / 52%) 62%, rgb(17 23 16 / 30%) 100%); }
+  .hero-copy { position: relative; z-index: 3; padding-top: 74px; }.hero-kicker { margin-bottom: 14px; font-size: .72rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }.hero h1 { max-width: 760px; white-space: pre-line; font-size: clamp(3.4rem, 7vw, 6.6rem); line-height: .96; }.hero-copy > p:not(.hero-kicker) { max-width: 580px; margin: 22px 0 26px; color: #f1eee7; font-family: var(--serif); font-size: clamp(1.12rem, 1.7vw, 1.38rem); line-height: 1.48; }.hero-actions { display: flex; align-items: center; gap: 22px; }.secondary { font-size: .84rem; font-weight: 600; text-underline-offset: 6px; }
+  @media (max-width: 700px) { .hero { min-height: 690px; align-items: flex-end; }.hero-copy { padding: 112px 0 68px; }.hero-actions { align-items: flex-start; flex-direction: column; gap: 16px; } }
 </style>

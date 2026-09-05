@@ -2,31 +2,24 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import { categories } from '../../data/products';
 import { getProducts } from '../../lib/content';
+import type { ProductCategory } from '../../lib/types';
 const products = await getProducts();
+const sections: Array<{ id: ProductCategory; title: string; text: string }> = [
+  { id: 'compost-soil', title: 'Compost & soil', text: 'Finished vermicompost and soil-building blends.' },
+  { id: 'worms-care', title: 'Worms & supplies', text: 'Everything needed to start or support a worm farm.' },
+  { id: 'liquids', title: 'Liquid plant food', text: 'Fresh biological support for soil and foliage.' },
+  { id: 'experiences', title: 'Farm experiences', text: 'See the process and learn from a working farm.' },
+];
 ---
 <BaseLayout title="Farm shop" description="Browse vermicompost, organic soil products, red wigglers, worm bedding, vermicompost tea and farm tours in Pretoria.">
-  <PageHero eyebrow="The farm shop" title="Living products for living soil." intro="Add the products and quantities you need to an enquiry. Nico will personally confirm availability, collection and local delivery." image="/farm/worm-bins-closed.jpg" />
-  <section class="section shop-section"><div class="container">
-    <div class="shop-tools"><div class="filters" role="group" aria-label="Filter products">{categories.map((category) => <button type="button" class:list={{ active: category.id === 'all' }} data-filter={category.id}>{category.label}</button>)}</div><p><span data-visible-count>{products.length}</span> farm products</p></div>
-    <div class="shop-grid">{products.map((product, index) => <ProductCard product={product} index={index} />)}</div>
-    <div class="bulk-note paper-card"><div><p class="eyebrow">Need a cubic metre—or more?</p><h2>Bulk orders stay personal.</h2></div><div><p>Tell us what you are planting, how much material you need and where it needs to go. We will confirm the sensible collection or delivery option.</p><a class="button button--ghost" href="/enquiry">Start a bulk enquiry <span>→</span></a></div></div>
+  <PageHero eyebrow="The farm shop" title="Living products for living soil." intro="Choose what you need and send an enquiry. Nico will confirm availability, collection and local delivery." />
+  <section class="section shop"><div class="container">
+    {sections.map((section) => { const items = products.filter((product) => product.category === section.id); return items.length > 0 && <section class="category-section" aria-labelledby={`category-${section.id}`}><div class="category-heading"><div><p class="eyebrow">{items.length} {items.length === 1 ? 'product' : 'products'}</p><h2 id={`category-${section.id}`}>{section.title}</h2></div><p>{section.text}</p></div><div class="shop-grid">{items.map((product) => <ProductCard product={product} />)}</div></section>; })}
+    <aside class="bulk-note"><div><p class="eyebrow">Large quantities</p><h2>Need a cubic metre or more?</h2></div><div><p>Tell us what you are planting, how much you need and where it needs to go. We’ll confirm a sensible collection or delivery option.</p><a class="button button--ghost" href="/enquiry">Start a bulk enquiry</a></div></aside>
   </div></section>
 </BaseLayout>
-<script>
-  const filterButtons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
-  const cards = document.querySelectorAll<HTMLElement>('[data-product-card]');
-  const visibleCount = document.querySelector<HTMLElement>('[data-visible-count]');
-  filterButtons.forEach((button) => button.addEventListener('click', () => {
-    const filter = button.dataset.filter;
-    filterButtons.forEach((item) => item.classList.toggle('active', item === button));
-    let visible = 0;
-    cards.forEach((card) => { const show = filter === 'all' || card.dataset.category === filter; card.hidden = !show; if (show) visible += 1; });
-    if (visibleCount) visibleCount.textContent = String(visible);
-  }));
-</script>
 <style>
-  .shop-section { background: var(--paper); }.shop-tools { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 42px; padding-bottom: 22px; border-bottom: 1px solid var(--rule); }.filters { display: flex; flex-wrap: wrap; gap: 8px; }.filters button { padding: 9px 15px; border: 1px solid var(--rule); background: var(--white); color: var(--ink); cursor: pointer; font-size: .75rem; font-weight: 600; }.filters button.active, .filters button:hover { border-color: var(--green); background: var(--green); color: var(--white); }.shop-tools > p { margin: 0; color: var(--muted); font-size: .8rem; white-space: nowrap; }.shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }.bulk-note { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 76px; padding: clamp(30px, 5vw, 60px); }.bulk-note h2 { font-size: clamp(2.5rem, 4vw, 4.3rem); }.bulk-note > div:last-child { align-self: end; }.bulk-note > div:last-child p { color: var(--muted); }.bulk-note .button { margin-top: 10px; }
-  @media (max-width: 920px) { .shop-grid { grid-template-columns: 1fr 1fr; }.bulk-note { grid-template-columns: 1fr; gap: 26px; } } @media (max-width: 620px) { .shop-tools { align-items: flex-start; flex-direction: column; }.shop-grid { grid-template-columns: 1fr; } }
+  .shop { background: var(--paper); }.category-section + .category-section { margin-top: clamp(64px, 8vw, 92px); }.category-heading { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); }.category-heading h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); }.category-heading > p { max-width: 380px; margin: 0; color: var(--muted); font-size: .9rem; }.shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }.bulk-note { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 82px; padding: 38px; border: 1px solid var(--rule); background: var(--white); }.bulk-note h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); }.bulk-note > div:last-child { align-self: end; }.bulk-note > div:last-child p { color: var(--muted); }
+  @media (max-width: 900px) { .shop-grid { grid-template-columns: 1fr 1fr; }.bulk-note { grid-template-columns: 1fr; gap: 18px; } } @media (max-width: 600px) { .category-heading { align-items: flex-start; flex-direction: column; gap: 8px; }.shop-grid { grid-template-columns: 1fr; } }
 </style>

@@ -3,18 +3,13 @@ interface Props { eyebrow: string; title: string; intro: string; image?: string;
 const { eyebrow, title, intro, image } = Astro.props;
 ---
 <section class:list={['page-hero', { 'page-hero--image': image }]}>
-  {image && <img src={image} alt="" aria-hidden="true" />}
-  <div class="page-hero-shade" aria-hidden="true"></div>
+  {image && <img src={image} alt="" aria-hidden="true" />}{image && <div class="page-hero-shade" aria-hidden="true"></div>}
   <div class="container page-hero-copy"><p class="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{intro}</p></div>
 </section>
 <style>
-  .page-hero { position: relative; min-height: 470px; display: flex; align-items: flex-end; overflow: hidden; border-bottom: 1px solid var(--rule); background: var(--green-dark); color: var(--white); }
-  .page-hero > img, .page-hero-shade { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .page-hero > img { filter: saturate(.72); }
-  .page-hero-shade { background: linear-gradient(90deg, rgb(21 28 19 / 88%), rgb(47 33 25 / 52%)); }
-  .page-hero-copy { position: relative; padding-block: 100px 72px; }
-  .page-hero .eyebrow { color: #dfe8d8; }
-  .page-hero h1 { max-width: 960px; font-size: clamp(3.8rem, 8vw, 7.8rem); }
-  .page-hero-copy > p:last-child { max-width: 660px; margin: 24px 0 0; color: #eef0e9; font-family: var(--serif); font-size: clamp(1.15rem, 2vw, 1.5rem); }
+  .page-hero { position: relative; min-height: 300px; display: flex; align-items: center; overflow: hidden; border-bottom: 1px solid var(--rule); background: var(--white); }
+  .page-hero > img, .page-hero-shade { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }.page-hero > img { filter: saturate(.72); }.page-hero-shade { background: linear-gradient(90deg, rgb(20 27 19 / 88%), rgb(36 27 20 / 47%)); }
+  .page-hero--image { min-height: 360px; color: var(--white); }.page-hero-copy { position: relative; padding-block: 64px; }.page-hero--image .eyebrow { color: #dfe8d8; }
+  .page-hero h1 { max-width: 860px; font-size: clamp(3rem, 6vw, 5.5rem); }.page-hero-copy > p:last-child { max-width: 640px; margin: 18px 0 0; color: var(--muted); font-family: var(--serif); font-size: clamp(1.08rem, 1.7vw, 1.3rem); line-height: 1.5; }.page-hero--image .page-hero-copy > p:last-child { color: #eef0e9; }
+  @media (max-width: 640px) { .page-hero, .page-hero--image { min-height: 280px; } }
 </style>
-

@@ -7,7 +7,8 @@
     "dev": "sanity dev",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "import-content": "sanity exec scripts/import-content.ts --with-user-token"
+    "import-content": "sanity exec scripts/import-content.ts --with-user-token",
+    "seed-homepage-redesign": "sanity exec scripts/seed-homepage-redesign.ts --with-user-token"
   },
   "dependencies": {
     "@sanity/client": "^7.26.2",

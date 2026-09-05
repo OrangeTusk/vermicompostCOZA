@@ -1,29 +1,5 @@
-<div class="basket-backdrop" data-basket-backdrop hidden></div>
-<aside class="basket-drawer" data-basket-drawer aria-labelledby="basket-title" aria-hidden="true">
-  <div class="basket-head"><div><p>Order enquiry</p><h2 id="basket-title">Your basket</h2></div><button type="button" data-basket-close aria-label="Close enquiry basket">×</button></div>
-  <div class="basket-items" data-basket-items><p class="basket-empty">Your enquiry basket is empty.</p></div>
-  <div class="basket-summary"><div><span>Estimated total</span><strong data-basket-total>R0</strong></div><p>Prices and delivery are confirmed personally by the farm.</p><a class="button" href="/enquiry">Review and send enquiry <span>→</span></a></div>
-</aside>
-<div class="basket-toast" data-basket-toast role="status" aria-live="polite" hidden>Added to your enquiry basket.</div>
+<div class="basket-toast" data-basket-toast role="status" aria-live="polite" hidden><span>Added to your enquiry.</span><a href="/enquiry">Review enquiry</a></div>
 <style>
-  .basket-backdrop { position: fixed; inset: 0; z-index: 90; background: rgb(15 20 14 / 46%); backdrop-filter: blur(2px); }
-  .basket-drawer { position: fixed; right: 0; top: 0; z-index: 100; width: min(460px, 100vw); height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; transform: translateX(102%); background: var(--paper); box-shadow: -20px 0 70px rgb(20 24 18 / 20%); transition: transform 250ms ease; }
-  .basket-drawer[data-open='true'] { transform: none; }
-  .basket-head { display: flex; justify-content: space-between; gap: 20px; padding: 28px; border-bottom: 1px solid var(--rule); }
-  .basket-head p { margin: 0 0 4px; color: var(--clay); font-size: .66rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
-  .basket-head h2 { font-size: 2.2rem; }
-  .basket-head button { align-self: flex-start; width: 38px; height: 38px; border: 1px solid var(--rule); border-radius: 50%; background: transparent; cursor: pointer; font-size: 1.45rem; }
-  .basket-items { overflow-y: auto; padding: 10px 28px; }
-  .basket-empty { padding: 40px 0; color: var(--muted); font-family: var(--serif); font-size: 1.2rem; }
-  .basket-summary { padding: 24px 28px 28px; border-top: 1px solid var(--rule); background: var(--white); }
-  .basket-summary > div { display: flex; justify-content: space-between; }.basket-summary strong { color: var(--green); font-family: var(--serif); font-size: 1.35rem; }.basket-summary p { margin: 8px 0 20px; color: var(--muted); font-size: .8rem; }.basket-summary .button { width: 100%; }
-  .basket-toast { position: fixed; z-index: 120; left: 50%; bottom: 24px; transform: translateX(-50%); padding: 12px 18px; background: var(--ink); color: var(--white); box-shadow: var(--shadow); font-size: .82rem; }
-  :global(.basket-line) { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--rule); }
-  :global(.basket-line h3) { font-size: 1.25rem; line-height: 1.05; }
-  :global(.basket-line p) { margin: 5px 0 10px; color: var(--muted); font-size: .78rem; }
-  :global(.basket-line-controls) { display: flex; align-items: center; gap: 10px; }
-  :global(.basket-line button) { border: 1px solid var(--rule); background: var(--white); cursor: pointer; }
-  :global(.basket-line-controls button) { width: 28px; height: 28px; }
-  :global(.basket-remove) { padding: 4px 0; border: 0 !important; background: transparent !important; color: var(--soil); font-size: .7rem; text-decoration: underline; }
-  :global(.basket-line-price) { color: var(--green); font-size: .82rem; font-weight: 600; white-space: nowrap; }
+  .basket-toast { position: fixed; z-index: 120; right: 22px; bottom: 22px; display: flex; align-items: center; gap: 18px; padding: 14px 16px; background: var(--ink); color: var(--white); box-shadow: var(--shadow); font-size: .8rem; }.basket-toast a { color: var(--white); font-weight: 600; text-underline-offset: 4px; }
+  @media (max-width: 560px) { .basket-toast { left: 14px; right: 14px; justify-content: space-between; } }
 </style>
